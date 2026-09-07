@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: katha-reels
+    runtime: docker
+    plan: standard          # 2GB RAM. ffmpeg x264 at 1080x1920 needs headroom.
+    region: singapore       # closest to the ElevenLabs/Gemini latency you care about
+    healthCheckPath: /api/config
+    disk:
+      name: katha-data
+      mountPath: /data      # matches KATHA_DATA_DIR
+      sizeGB: 50            # ~25GB for the full 328-reel catalogue, plus room
+    envVars:
+      - key: PORT
+        value: "4321"
+      - key: SCRIPT_PROVIDER
+        value: azure
+      - key: AZURE_OPENAI_ENDPOINT
+        sync: false
+      - key: AZURE_OPENAI_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_DEPLOYMENT
+        value: gpt-6-astra
+      - key: AZURE_OPENAI_API_STYLE
+        value: responses
+      - key: IMAGE_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_IMAGE_MODEL
+        value: gemini-3-pro-image
+      - key: GEMINI_IMAGE_SIZE
+        value: 2K
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: ELEVENLABS_VOICE_ID
+        value: zgqefOY5FPQ3bB7OZTVR
+      - key: ELEVENLABS_VOICE_ID_KIDS
+        value: 1qEiC6qsybMkmnNdVMbK
+      - key: VEO_ENABLED
+        value: "true"
+      - key: SCRIPT_MAX_TOKENS
+        value: "16000"

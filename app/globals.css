@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #07080e;
+  --color-ink-2: #0e1019;
+  --color-ink-3: #161927;
+  --color-line: #242838;
+  --color-gold: #e8b552;
+  --color-gold-dim: #8a6c2e;
+  --color-sindoor: #e2503f;
+  --color-lotus: #7c5cff;
+  --font-hi: 'Noto Sans Devanagari', 'Kohinoor Devanagari', system-ui, sans-serif;
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+html, body { background: var(--color-ink); color: #e9ebf2; }
+body { font-family: var(--font-ui); -webkit-font-smoothing: antialiased; }
+
+.hi { font-family: var(--font-hi); }
+
+/* Faint temple-gold vignette so full-bleed pages don't read as a flat black rect. */
+.aura {
+  background:
+    radial-gradient(900px 520px at 12% -8%, rgba(232,181,82,0.10), transparent 62%),
+    radial-gradient(760px 480px at 92% 4%, rgba(124,92,255,0.10), transparent 60%);
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012));
+  border: 1px solid var(--color-line);
+}
+.card:hover { border-color: rgba(232,181,82,0.42); }
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition;
+}
+.btn-gold { background: var(--color-gold); color: #17130a; }
+.btn-gold:hover { background: #f3c86a; }
+.btn-ghost { border: 1px solid var(--color-line); color: #c7cbd8; }
+.btn-ghost:hover { border-color: var(--color-gold); color: var(--color-gold); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.chip {
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide;
+  border: 1px solid var(--color-line);
+  background: rgba(255,255,255,0.03);
+}
+
+/* Snap feed */
+.feed { scroll-snap-type: y mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.feed::-webkit-scrollbar { display: none; }
+.snap { scroll-snap-align: start; scroll-snap-stop: always; }
+
+/* Beat colours — one hue per beat kind, reused everywhere so the timeline,
+   the shot strip and the monitor all read as the same object. */
+.beat-hook      { --b: #e2503f; }
+.beat-friction  { --b: #e8b552; }
+.beat-escalation{ --b: #d98324; }
+.beat-spike     { --b: #7c5cff; }
+.beat-button    { --b: #35c9a3; }
+.beat-bar { background: var(--b); }
+.beat-text { color: var(--b); }
+.beat-soft { background: color-mix(in srgb, var(--b) 16%, transparent); border-color: color-mix(in srgb, var(--b) 45%, transparent); }
