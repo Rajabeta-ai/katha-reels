@@ -4,3 +4,4 @@ node_modules
 data/db.json
 data/renders
 data/assets
+tsconfig.tsbuildinfo
