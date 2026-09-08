@@ -1,17 +1,48 @@
+# Render Blueprint — katha-reels
+#
+# Attach in the Render dashboard: New → Blueprint → pick this repo. Render reads this
+# file from the branch below and creates/updates the service on every push.
+#
+# One web service, built from ./Dockerfile (ffmpeg + libass + Noto Sans Devanagari),
+# with a persistent disk for the JSON store, generated stills, audio and MP4 renders.
+#
+# Notes
+# - A persistent disk pins the service to a single instance and disables zero-downtime
+#   deploys. That is required anyway: background jobs (lib/jobs.ts) live in process memory.
+# - `sync: false` keys are prompted for once when the blueprint is first applied and are
+#   never written back to this file. Everything else is committed here.
+# - The Docker build does not need any of the API keys; they are only read at request time.
+
 services:
   - type: web
     name: katha-reels
     runtime: docker
-    plan: standard          # 2GB RAM. ffmpeg x264 at 1080x1920 needs headroom.
+    repo: https://github.com/Rajabeta-ai/katha-reels
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: commit   # deploy on every push to `branch` (replaces deprecated autoDeploy)
+    plan: 1c-2g             # 1 CPU / 2 GB RAM (was "standard"). ffmpeg x264 at 1080x1920 needs headroom.
     region: singapore       # closest to the ElevenLabs/Gemini latency you care about
     healthCheckPath: /api/config
     disk:
       name: katha-data
       mountPath: /data      # matches KATHA_DATA_DIR
-      sizeGB: 50            # ~25GB for the full 328-reel catalogue, plus room
+      sizeGB: 50            # ~25 GB for the full 328-reel catalogue, plus room
     envVars:
+      # --- runtime -------------------------------------------------------------
+      - key: NODE_ENV
+        value: production
       - key: PORT
-        value: "4321"
+        value: "4321"       # Dockerfile EXPOSEs 4321; `npm start` binds ${PORT}
+      - key: KATHA_DATA_DIR
+        value: /data        # lib/store.ts: db.json, assets/ and renders/ live here
+      - key: CAPTION_FONT
+        value: Noto Sans Devanagari
+      - key: CAPTION_FONTS_DIR
+        value: /app/assets/fonts
+
+      # --- script writer (SCRIPT_PROVIDER: azure | anthropic) -------------------
       - key: SCRIPT_PROVIDER
         value: azure
       - key: AZURE_OPENAI_ENDPOINT
@@ -21,22 +52,34 @@ services:
       - key: AZURE_OPENAI_DEPLOYMENT
         value: gpt-6-astra
       - key: AZURE_OPENAI_API_STYLE
-        value: responses
+        value: responses    # responses | chat
+      - key: SCRIPT_MAX_TOKENS
+        value: "16000"
+      # To use Anthropic instead: set SCRIPT_PROVIDER=anthropic and add
+      #   ANTHROPIC_API_KEY (secret), optionally KATHA_SCRIPT_MODEL (default claude-opus-5).
+      # Other optional Azure knobs: AZURE_OPENAI_API_VERSION, AZURE_TIMEOUT_MS.
+
+      # --- stills (IMAGE_PROVIDER: gemini | openai | fal) -----------------------
       - key: IMAGE_PROVIDER
         value: gemini
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_IMAGE_MODEL
-        value: gemini-3-pro-image
+        value: gemini-3-pro-image   # or gemini-3.1-flash-image (cheaper)
       - key: GEMINI_IMAGE_SIZE
         value: 2K
+      # Alternatives: OPENAI_API_KEY + OPENAI_IMAGE_MODEL, or FAL_KEY + FAL_IMAGE_MODEL.
+
+      # --- motion shots (Veo, needs GEMINI_API_KEY) -----------------------------
+      - key: VEO_ENABLED
+        value: "true"
+      # Optional: VEO_MODEL, VEO_RESOLUTION (default 720x1280, upscaled at render time).
+
+      # --- Hindi narration (ElevenLabs) -----------------------------------------
       - key: ELEVENLABS_API_KEY
         sync: false
       - key: ELEVENLABS_VOICE_ID
         value: zgqefOY5FPQ3bB7OZTVR
       - key: ELEVENLABS_VOICE_ID_KIDS
         value: 1qEiC6qsybMkmnNdVMbK
-      - key: VEO_ENABLED
-        value: "true"
-      - key: SCRIPT_MAX_TOKENS
-        value: "16000"
+      # Optional: ELEVENLABS_MODEL_ID.
