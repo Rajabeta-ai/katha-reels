@@ -1,14 +1,51 @@
-# कथा Reels — Devotional Microdrama Studio
+# कथा Reels — AI micro-drama studio for Indian mythology
 
-A local studio that turns Hindu scripture into **Hindi 9:16 microdrama reels** built on the
-Chinese *duanju* (短剧) formula — hook in the first 3 seconds, cliffhanger in the last 2,
-every episode picking up the question the previous one left open.
+Turns a chapter of the Ramayana, Mahabharata or Panchatantra into a binge-able series of Hindi 9:16 reels.
+A multi-step AI pipeline writes, illustrates, narrates and renders each episode, and an automated QC layer
+flags any reel that breaks the format.
 
-You read a chapter → click **रील बनाइए** → the AI writes an episode-by-episode series →
-you inspect and edit every beat, VO line and shot prompt → generate visuals + Hindi
-narration → render a 1080×1920 MP4 → download it and post it.
+**Product, pipeline design and prompts:** [Ankit Banerjee](https://www.linkedin.com/in/ankit-b-583768aa/)
+
+## Why it exists
+
+China's short-drama (*duanju*) apps showed that 60–90 second episodes, with a hook in the first 3 seconds and
+a cliffhanger at the end, keep people watching episode after episode. Devotional stories are some of India's
+most-watched content but are mostly told as long, slow videos. Katha Reels applies the short-drama format to
+the source texts.
+
+## What it does
+
+- **Catalog:** 48 chapters across 6 works, each with a Hindi summary, its canonical source and pre-identified dramatic hooks.
+- **Script engine:** writes a series spine, then each episode in five beats (hook → friction → escalation → spike → cut), drawing on 12 hook types and 8 cliffhanger types.
+- **Quality control:** 11 automated checks on every reel; 6 are blockers, such as "the hook lands by 3 s" and "the episode cuts before resolution".
+- **Production:** one still per shot (Gemini image), optional Veo image-to-video motion shots, one continuous Hindi narration take (ElevenLabs), and an ffmpeg render to 1080×1920 with correctly shaped Devanagari captions.
+- **Human in the loop:** every beat, voice-over line and shot prompt can be edited before anything is generated.
+- **Model-agnostic:** scripts run on Anthropic or Azure OpenAI; images on Gemini, OpenAI or fal.
+
+## How it works
+
+```mermaid
+flowchart LR
+  A[Chapter + hooks] --> B[Series spine<br/>LLM]
+  B --> C[Episode scripts<br/>beats, shots, VO]
+  C --> D{QC: 11 checks}
+  D -- blockers --> E[Edit in studio]
+  E --> C
+  D -- pass --> F[Stills<br/>Gemini image]
+  F --> G[Motion shots<br/>Veo image-to-video]
+  F --> H[Hindi narration<br/>ElevenLabs]
+  G --> I[ffmpeg render<br/>1080×1920 MP4]
+  H --> I
+```
+
+## Stack
+
+Next.js · TypeScript · Anthropic / Azure OpenAI · Gemini image · Veo 3.1 · ElevenLabs · ffmpeg (libass + HarfBuzz) · Docker on Render
 
 ---
+
+# Running it
+
 
 ## Quick start
 
