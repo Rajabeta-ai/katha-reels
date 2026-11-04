@@ -70,7 +70,7 @@ If it returns `"ok": true` with `1080×1920 / h264 / 30fps`, the whole render pa
 
 | Var | What it drives | Required |
 |---|---|---|
-| `KATHA_PASSWORD` | Password for the hosted app (any username). Production stays locked until it is set; `/api/dev/*` is disabled in production | in production |
+| `KATHA_PASSWORD` | Password for the hosted studio. Visitors see the public `/welcome` showcase (sample reels + how it works) and sign in there with the password alone. Production stays locked until it is set; `/api/dev/*` is disabled in production | in production |
 | `SCRIPT_PROVIDER` | `anthropic` or `azure` — who writes the scripts | yes |
 | `ANTHROPIC_API_KEY` | Series spine + episode scripts + storyboards | if anthropic |
 | `KATHA_SCRIPT_MODEL` | default `claude-opus-5` | no |

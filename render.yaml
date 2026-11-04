@@ -34,7 +34,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: KATHA_PASSWORD
-        sync: false         # password for the hosted app (proxy.ts); without it the app stays locked
+        sync: false         # studio password, entered on /welcome (proxy.ts); without it the app stays locked
       - key: PORT
         value: "4321"       # Dockerfile EXPOSEs 4321; `npm start` binds ${PORT}
       - key: KATHA_DATA_DIR
