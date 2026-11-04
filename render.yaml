@@ -33,6 +33,8 @@ services:
       # --- runtime -------------------------------------------------------------
       - key: NODE_ENV
         value: production
+      - key: KATHA_PASSWORD
+        sync: false         # password for the hosted app (proxy.ts); without it the app stays locked
       - key: PORT
         value: "4321"       # Dockerfile EXPOSEs 4321; `npm start` binds ${PORT}
       - key: KATHA_DATA_DIR
@@ -79,7 +81,4 @@ services:
       - key: ELEVENLABS_API_KEY
         sync: false
       - key: ELEVENLABS_VOICE_ID
-        value: zgqefOY5FPQ3bB7OZTVR
-      - key: ELEVENLABS_VOICE_ID_KIDS
-        value: 1qEiC6qsybMkmnNdVMbK
-      # Optional: ELEVENLABS_MODEL_ID.
+        value: zgqe

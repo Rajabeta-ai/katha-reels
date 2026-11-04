@@ -5,3 +5,5 @@ data/db.json
 data/renders
 data/assets
 tsconfig.tsbuildinfo
+# Local agent workspaces (company briefs and outputs), never published
+agents/

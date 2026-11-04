@@ -70,6 +70,7 @@ If it returns `"ok": true` with `1080×1920 / h264 / 30fps`, the whole render pa
 
 | Var | What it drives | Required |
 |---|---|---|
+| `KATHA_PASSWORD` | Password for the hosted app (any username). Production stays locked until it is set; `/api/dev/*` is disabled in production | in production |
 | `SCRIPT_PROVIDER` | `anthropic` or `azure` — who writes the scripts | yes |
 | `ANTHROPIC_API_KEY` | Series spine + episode scripts + storyboards | if anthropic |
 | `KATHA_SCRIPT_MODEL` | default `claude-opus-5` | no |
@@ -162,45 +163,4 @@ episodes into the board as the writer finishes them.
 - If narration exists it is **the clock** — the visual timeline is scaled so the last word
   and the last frame land together
 - Captions burn through **libass + harfbuzz**, not `drawtext` — drawtext has no complex-text
-  shaping and renders Devanagari conjuncts and matras incorrectly
-- Soft alpha-ramp scrim behind captions (not a drawbox bar)
-- Text sits above a 420px bottom safe area so Instagram/Shorts chrome doesn't cover it
-
----
-
-## Catalog
-
-48 chapters across 6 works, each with a Hindi summary, the exact canonical locus, and
-pre-identified dramatic hooks that seed the script engine:
-
-| Work | Chapters | Source edition |
-|---|---|---|
-| रामायण | 12 | Valmiki Ramayana — Baroda Critical Edition · Gita Press |
-| महाभारत | 16 | BORI Critical Edition (1919–66) · Ganguli / Debroy |
-| कृष्ण लीला | 6 | Bhagavata Purana, Canto 10 — Gita Press |
-| शिव कथा | 5 | Shiva Mahapurana — Gita Press · J.L. Shastri |
-| पंचतंत्र | 5 | Vishnu Sharma — Hertel–Edgerton · Ryder |
-| विक्रम–बेताल | 4 | Kathasaritsagara, Lambaka 12 |
-
-Add more in `lib/catalog/` — one file per work, registered in `lib/catalog/index.ts`.
-
----
-
-## Layout
-
-```
-lib/microdrama.ts     the format contract (beats, hooks, cliffhangers, QC, style)
-lib/catalog/          the story catalog — Hindi summaries + canonical refs
-lib/ai/prompts.ts     system + stage prompts
-lib/ai/schemas.ts     one JSON schema shared by every script provider
-lib/ai/script.ts      provider dispatch + shared post-processing into a Reel
-lib/ai/anthropic.ts   Anthropic provider (forced tool use)
-lib/ai/azure.ts       Azure OpenAI provider — Responses API or chat/completions
-lib/ai/images.ts      gemini | openai | fal
-lib/ai/voice.ts       ElevenLabs Hindi
-lib/ai/veo.ts         Veo long-running op + poll
-lib/qc.ts             the validator
-lib/render.ts         ffmpeg assembly
-lib/pipeline.ts       visuals → voice → render
-app/                  catalog · story · chapter · reel monitor · feed · studio · method
-```
+  shaping and 
